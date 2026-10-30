@@ -1,0 +1,37 @@
+# Part 1: a workflow that starts itself
+
+$ curl -s -b cookies.txt -X POST http://127.0.0.1:5678/rest/workflows -d @wf3.json
+# wf3.json is "Lab 3 - Minute Log":
+#   Every Minute (a Schedule Trigger with the cron rule "* * * * *")
+#   -> Write the Line (a Set node: entry="the clock struck",
+#      loggedAt set by the expression ={{ $now.toISO() }})
+# ...created, then activated the same way as Lab 2. Nobody ran it.
+
+$ curl -s -b cookies.txt "http://127.0.0.1:5678/rest/executions?filter={...}"
+executions so far: 2
+ id: 4 | status: success | mode: trigger | started: 2026-10-30T05:16:00.056Z
+ id: 3 | status: success | mode: trigger | started: 2026-10-30T05:15:00.081Z
+# Two unattended runs, one at each minute mark. Mode "trigger" is how
+# n8n labels an execution nobody and nothing outside called for.
+
+# Inside execution 4:
+Every Minute -> [{"timestamp": "2026-10-30T01:16:00.000-04:00", "Readable date": "October 30th 2026, 1:16:00 am", ...}]
+Write the Line -> [{"entry": "the clock struck", "loggedAt": "2026-10-30T01:16:00.130-04:00"}]
+# (The Schedule Trigger's own item is a small calendar of the moment it
+# fired. The Set node's expression stamped 130 ms after the minute.)
+
+# Afterwards both Lab 2 and Lab 3 were deactivated through the same API,
+# so the lab does not keep a live webhook or a ticking clock behind it.
+
+# Part 2: the command line shares the same database
+
+$ n8n export:workflow --id=lLeE1i5x8lZ0PyHN --output=wf1-export.json
+Successfully exported 1 workflow.
+# wf1-export.json holds "Lab 1 - Greeting Counter" with its 3 nodes.
+
+$ n8n import:workflow --input=wf1-export.json
+Importing 1 workflows...
+Successfully imported 1 workflow.
+# The import matched the workflow by its id and updated it in place;
+# the workflow list afterwards still shows exactly the three lab
+# workflows, each inactive.

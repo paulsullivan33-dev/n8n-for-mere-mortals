@@ -1,0 +1,23 @@
+$ curl -s -b cookies.txt -X POST http://127.0.0.1:5678/rest/workflows -d @wf1.json
+# wf1.json is the workflow "Lab 1 - Greeting Counter":
+#   Manual Trigger -> Set a Visitor (visitor=Ada, visits=3)
+#   -> Build the Greeting (a Code node that reads those two fields
+#      and returns greeting / visitsSoFar / nextVisitWillBe)
+created workflow id: lLeE1i5x8lZ0PyHN
+name: Lab 1 - Greeting Counter | active: False | nodes: ['Manual Trigger', 'Set a Visitor', 'Build the Greeting']
+
+$ curl -s -b cookies.txt -X POST http://127.0.0.1:5678/rest/workflows/lLeE1i5x8lZ0PyHN/run -d @run1.json
+# The 2.x run endpoint wants the whole workflow plus a named trigger
+# ("triggerToStartFrom"); a first attempt without it was answered
+# 400 "specify either a trigger to start from or a destination node".
+{"data":{"executionId":"1"}}
+
+$ curl -s -b cookies.txt "http://127.0.0.1:5678/rest/executions/1"   (status lines)
+status: success | mode: manual | finished: True | workflowId: lLeE1i5x8lZ0PyHN
+
+# What each node actually produced (the execution record stores the
+# items that left every node):
+Manual Trigger -> [{}]
+Set a Visitor -> [{"visitor": "Ada", "visits": 3}]
+Build the Greeting -> [{"greeting": "Hello, Ada!", "visitsSoFar": 3, "nextVisitWillBe": 4}]
+lastNodeExecuted: Build the Greeting

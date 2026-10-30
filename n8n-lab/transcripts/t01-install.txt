@@ -1,0 +1,8 @@
+$ npm install n8n
+added 2352 packages in 18m
+(full log also carried 370 npm warnings: peer-dependency
+notices from the LangChain family and funding requests. Nothing that
+stopped the install. Final line of the log:)
+370 packages are looking for funding
+  run `npm fund` for details
+EXIT:0

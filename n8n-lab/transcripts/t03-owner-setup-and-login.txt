@@ -1,0 +1,24 @@
+$ curl -s -X POST http://127.0.0.1:5678/rest/owner/setup \
+    -H "Content-Type: application/json" -d @owner.json
+# owner.json asks for lab@example.org, first name Lab, last name Keeper,
+# and the password "correct-horse-battery-42"
+{"code":"custom","message":"Password must contain at least 1 uppercase letter.","path":["password"]}
+
+# Rejected, and the message says why. n8n passwords need at least 8
+# characters, a number, and a capital letter. Same details, stronger
+# password ("Correct-Horse-Battery-42"):
+{'email': 'lab@example.org', 'firstName': 'Lab', 'lastName': 'Keeper'}
+id: 7b95e406-6aaa...
+
+$ curl -s -c cookies.txt -X POST http://127.0.0.1:5678/rest/login \
+    -H "Content-Type: application/json" -d @login.json
+# login.json: {"emailOrLdapLoginId":"lab@example.org","password":"Correct-Horse-Battery-42"}
+logged in: lab@example.org
+
+$ grep n8n-auth cookies.txt
+n8n-auth eyJhbGciOiJIUzI1...
+# That one cookie is the session. Every later API call in this lab
+# sends it back with -b cookies.txt.
+
+$ curl -s -b cookies.txt http://127.0.0.1:5678/rest/users
+user: lab@example.org | role: global:owner | isOwner: True

@@ -1,0 +1,33 @@
+$ curl -s -b cookies.txt -X POST http://127.0.0.1:5678/rest/workflows -d @wf2.json
+# wf2.json is "Lab 2 - Webhook Order Desk":
+#   Order Webhook (POST, path "order-desk", respond with the last node)
+#   -> Stamp the Order (a Set node adding desk="web orders", received=true)
+created workflow id: CxivHbP5sPEcMonh | active: False
+
+$ curl -s -X POST http://127.0.0.1:5678/webhook/order-desk \
+    -H "Content-Type: application/json" -d '{"item":"notebook","qty":2}'
+{"code":404,"message":"The requested webhook \"POST order-desk\" is not registered.","hint":"The workflow must be active for a production URL to run successfully. ..."}
+# Not an error in the workflow: an inactive workflow has no live URL.
+# That message is n8n saying "switch it on first".
+
+$ curl -s -b cookies.txt -X POST \
+    http://127.0.0.1:5678/rest/workflows/CxivHbP5sPEcMonh/activate \
+    -H "Content-Type: application/json" -d '{"versionId":"f90a9fcc-a369-4741-b66b-1a33cdb8c681"}'
+active now: True
+# In n8n 2.x, activating names the exact saved version to switch on.
+
+$ curl -s -X POST http://127.0.0.1:5678/webhook/order-desk \
+    -H "Content-Type: application/json" -d '{"item":"notebook","qty":2}'
+{"headers":{...},"params":{},"query":{},
+ "body":{"item":"notebook","qty":2},
+ "webhookUrl":"http://localhost:5678/webhook/order-desk",
+ "executionMode":"production","desk":"web orders","received":true}
+# The caller got the last node's item back: the whole request envelope,
+# the order itself under "body", and the two fields the Set node stamped.
+
+$ curl -s -b cookies.txt "http://127.0.0.1:5678/rest/executions?filter={...workflowId...}"
+execution id: 2 | status: success | mode: webhook | started: 2026-10-30T05:13:45.805Z
+
+# Inside execution 2, what each node passed on:
+Order Webhook -> {"body": {"item": "notebook", "qty": 2}}
+Stamp the Order -> {"body": {"item": "notebook", "qty": 2}, "desk": "web orders", "received": true}

@@ -1,0 +1,11 @@
+$ ./node_modules/.bin/n8n start     (with N8N_USER_FOLDER pointed at the lab)
+Version: 2.45.6
+Editor is now accessible via:
+http://localhost:5678
+
+$ curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:5678/
+200
+$ curl -s http://127.0.0.1:5678/ | grep -o "<title>[^<]*</title>"
+<title>n8n.io - Workflow Automation</title>
+$ curl -s http://127.0.0.1:5678/healthz
+{"status":"ok"}

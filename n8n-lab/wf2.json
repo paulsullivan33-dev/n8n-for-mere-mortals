@@ -1,0 +1,66 @@
+{
+  "name": "Lab 2 - Webhook Order Desk",
+  "nodes": [
+    {
+      "id": "44444444-4444-4444-8444-444444444444",
+      "name": "Order Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "55555555-5555-4555-8555-555555555555",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "order-desk",
+        "responseMode": "lastNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "66666666-6666-4666-8666-666666666666",
+      "name": "Stamp the Order",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        460,
+        300
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1",
+              "name": "desk",
+              "value": "web orders",
+              "type": "string"
+            },
+            {
+              "id": "b2",
+              "name": "received",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Order Webhook": {
+      "main": [
+        [
+          {
+            "node": "Stamp the Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {}
+}

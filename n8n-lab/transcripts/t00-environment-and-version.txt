@@ -1,0 +1,10 @@
+$ node --version
+v24.22.1
+$ npm --version
+10.9.4
+$ ./node_modules/.bin/n8n --version
+2.45.6
+$ grep -m1 "\"version\"" node_modules/n8n/package.json
+  "version": "2.45.6",
+$ du -sh node_modules
+2.9G	node_modules

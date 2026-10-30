@@ -1,0 +1,20 @@
+$ curl -s -b cookies.txt -X POST http://127.0.0.1:5678/rest/workflows -d @wf4.json
+# wf4.json is "Lab 4 - Health Check Client":
+#   Manual Trigger -> Ask the Health Endpoint
+#   (an HTTP Request node, GET http://127.0.0.1:5678/healthz)
+# created workflow id: 2hU9t2RZCY7tZpyA
+
+$ curl -s -b cookies.txt -X POST http://127.0.0.1:5678/rest/workflows/2hU9t2RZCY7tZpyA/run -d @run4.json
+{"data":{"executionId":"5"}}
+
+$ curl -s -b cookies.txt http://127.0.0.1:5678/rest/executions/5
+status: success | mode: manual
+
+# Inside execution 5, what each node passed on:
+Manual Trigger -> [{}]
+Ask the Health Endpoint -> [{"status": "ok"}]
+# The HTTP Request node turned the endpoint's JSON answer into an
+# ordinary item - the same shape every later node would receive.
+# The endpoint it called was n8n's own health check on loopback;
+# the node itself does not care whether the address is across the
+# room or across the internet.
